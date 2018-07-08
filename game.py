@@ -9,6 +9,7 @@ def help():
     input("...")
     print("Examples (Not case sensitive): ")
     print("OPEN DOOR")
+    print("EXIT WINDOW")
     print("SPEAK ROBOT")
     print("TALK TO ROBOT")
     print("BREAK WINDOW")
@@ -59,7 +60,7 @@ def playStartingRoom():
     g = gun()
 
     object_dictionary = {'p': p, 'r': r, 'i': i, 'w': w, 'd': d, 'l': l, 'g':g}
-    while not p.dead and not w.exit and not d.exit:
+    while not p.isDead() and not w.getHasBeenExitThrough() and not d.getHasBeenExitThrough():
         UI = input("\n<Type Command>")
         if 'with' in UI.lower():
             if 'lamp' in UI.lower():
@@ -71,7 +72,10 @@ def playStartingRoom():
             else:
                 error()
         elif "robot" in UI.lower():
-            r.engageRobot(UI, object_dictionary)
+            if "command" in UI.lower():
+                r.robotCommand(UI, object_dictionary)
+            else:
+                r.engageRobot(UI, object_dictionary)
         elif "window" in UI.lower():
             w.engageWindow(UI, object_dictionary)
         elif "door" in UI.lower():
@@ -89,8 +93,35 @@ def playStartingRoom():
         else:
             error()
 
-    if p.dead:
-        retry = input("Game OVER! Try Again? (TYPE Yes or No)")
-        if retry.lower() == 'yes':
-            print()
-            beginGame()
+    if p.isDead():
+        GameOver(victory = False)
+
+    if w.getHasBeenExitThrough():
+        print("You land in a field by the house...")
+        input("...")
+        if r.getRobotFollows():
+            print("The robot lands behind you..")
+            input("...")
+            print("'Well... I guess we weren't going to be safe in there for much longer any way.")
+        GameOver(victory = True)
+
+    if d.getHasBeenExitThrough():
+        print("You walk through the door and instantly fill dread pull into your stomach...")
+        input("...")
+        print("As you look up, you see directly into the eyes of a giant monster. Rows of teeth fill a giant snarl breathing the smell of blood and dispair directly into your nose.")
+        input("...")
+        if r.getRobotFollows():
+            print("'Well... I guess it was only a matter of time until it caught up with us.' Mr. Robot sighs.")
+        print("I will spare you the details of the horrifying manner in which this beast eats.")
+        GameOver(victory = False)
+
+
+
+def GameOver(victory):
+    if victory:
+        print("Congratulations! You have won the game... for now.")
+
+    retry = input("Game OVER! Play Again? (TYPE Yes or No)")
+    if retry.lower() == 'yes':
+        print()
+        beginGame()
