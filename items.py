@@ -1,5 +1,5 @@
 from interactables import *
-interactionList = ['take', 'punch', 'kick', 'break', 'drop', 'climb', 'open', 'attack', 'shoot']
+interactionList = ['take', 'punch', 'kick', 'break', 'drop', 'climb', 'open', 'attack', 'shoot', 'pick up']
 
 class inventory(object):
     def __init__(self):
@@ -38,7 +38,7 @@ class interactable(object):
 
 
 class lamp(interactable):
-    lampInteractionList = ['take', 'break', 'punch', 'kick', 'drop']
+    lampInteractionList = ['take', 'break', 'punch', 'kick', 'drop', 'pick up']
     for i in range(len(lampInteractionList)):
         lampInteractionList.append(lampInteractionList[i] + ' the')
 
@@ -57,7 +57,7 @@ class lamp(interactable):
     def engageLamp(self, UI, object_dictionary):
         self.interactWithObject(UI)
         if self.getUI() in self.lampInteractionList:
-            if self.getUI() =='take' or self.getUI() == 'take the':
+            if self.getUI() =='take' or self.getUI() == 'take the' or self.getUI() == 'pick up':
                 if 'lamp' not in object_dictionary['i'].getInventory():
                     if self.getIsUsable() == True:
                         print("You pick up the lamp.")
@@ -126,21 +126,18 @@ class gun(interactable):
     def engagePistol(self, UI, object_dictionary):
         self.interactWithObject(UI)
         if self.getUI() in interactionList:
-            if self.getUI() =='take' or self.getUI() == 'take the':
+            if self.getUI() =='take' or self.getUI() == 'take the' or self.getUI() == 'pick up':
                 if object_dictionary['r'].isAwake == True:
                     print("You reach to take the pistol from the robot's side...")
                     input("...")
-                    print("The robot covers the pistol with its large hand.")
-                    input("...")
-                    print("'No...no. I can't let you take this. I may need it.', the robot patronizes.")
-                elif 'gun' not in object_dictionary['i'].getInventory():
-                    if self.getIsUsable() == True:
-                        print("You pick up the pistol.")
+                    if not object_dictionary['r'].getCanBeCommanded():
+                        print("The robot covers the pistol with its large hand.")
                         input("...")
-                        print("It has two bullets in the magazine and one in the chamber.")
-                        object_dictionary['i'].addItem('pistol')
+                        print("'No...no. I can't let you take this. I may need it.', the robot patronizes.")
                     else:
-                        print("The pistol is out of bullets. It is useless now.")
+                        self.takePistol(object_dictionary)
+                elif 'gun' not in object_dictionary['i'].getInventory():
+                    self.takePistol(object_dictionary)
                 else:
                     print("You are currently holding the pistol!")
             elif self.getUI() == 'drop' or self.getUI() == 'drop the':
@@ -159,6 +156,15 @@ class gun(interactable):
 
         else:
             error()
+
+    def takePistol(self, object_dictionary):
+        if self.getIsUsable() == True:
+            print("You pick up the pistol.")
+            input("...")
+            print("It has two bullets in the magazine and one in the chamber.")
+            object_dictionary['i'].addItem('pistol')
+        else:
+            print("The pistol is out of bullets. It is useless now.")
 
     def usePistol(self, UI, object_dictionary):
 
@@ -180,3 +186,7 @@ class gun(interactable):
                 object_dictionary['r'].engageRobot('attack robot with pistol x', object_dictionary)
             else:
                 error()
+
+def error():
+        print("*You can't do that*")
+        print("type HELP if confused.")

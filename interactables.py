@@ -120,14 +120,23 @@ class robot(character):
         input("...")
         question = input("<ASK QUESTION>")
 
-        if "where am i" in question.lower():
+        if "where" in question.lower():
             print("'Well... you are...here. To be honest, I don't really know quite myself.'")
+            input("...")
         elif "what am i" in question.lower() or "who am i" in question.lower():
             print("'There was an....accident. I am not sure how much you...actually want to know. For right now, let's focus on surving.'")
-        elif "who are you" in question.lower():
+        elif "who are you" in question.lower() or "what are you" in question.lower():
             print("'Well...you can call me... Mr. Robot.', it chuckles.")
             input("...")
             print("'Yes... Call me Mr.Robot.'")
+        elif "here" in question.lower():
+            print("'This was the only safe place I could find for us...' it says.")
+            input("...")
+            print("'I fought hard to get us here... though I think it may be time to give up.' it follows.")
+        elif "how long" in question.lower():
+            print("'Not long... I think' the robot replies.")
+            input("...")
+            print("'Though... I am not quite sure how long I have been...asleep' the robot reluctantly follows.")
         elif "can we leave" in question.lower() or "open" in question.lower() or "outside" in question.lower():
             print("'No... I am so sorry. We can't go outside. Honestly... I think we are done for. Out there are countless dangers...' the robot apologetically explains.")
             input("...")
@@ -217,7 +226,7 @@ class robot(character):
 
 
 class window(interactable):
-    windowInteractionList = ['open', 'punch', 'kick', 'break']
+    windowInteractionList = ['open', 'punch', 'kick', 'break' , 'look out', 'look through']
     for i in range(len(windowInteractionList)):
         windowInteractionList.append(windowInteractionList[i] + ' the')
 
@@ -242,8 +251,13 @@ class window(interactable):
             print("'You musn't leave!!!', it screams in an electronic, desperate voice.")
             object_dictionary['r'].awaken()
 
+        elif self.getUI() in self.windowInteractionList and (self.getUI() == 'look through' or self.getUI() == 'look through the' or self.getUI() == 'look out' or self.getUI() == 'look out the') and (object_dictionary['r'].isAwake() or object_dictionary['r'].isDead()):
+            print("You look out the window and see a large open field with no sign of any life nearby.")
+
         elif self.getUI() in self.windowInteractionList and object_dictionary['r'].isAwake() and self.isBroken() == False and not (object_dictionary['r'].isDead() or object_dictionary['r'].getCanBeCommanded()):
             print("'NO! You must stop!', the robot screams.")
+
+
 
         elif self.getUI() in self.windowInteractionList and not self.isBroken() and not (self.getUI() == 'open' or self.getUI() == 'open the') and (object_dictionary['r'].getCanBeCommanded() or object_dictionary['r'].isDead()):
             print("You walk over and smash the window.")
