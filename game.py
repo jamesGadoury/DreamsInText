@@ -13,12 +13,29 @@ g = gun()
 object_dictionary = {'p': p, 'r': r, 'i': i, 'w': w, 'd': d, 'l': l, 'g':g}
 
 
+class GameOverStatus(object):
+    def __init__(self):
+        self.gameOver = False
+    def GameOver(self, victory):
+        if victory:
+            print("Congratulations! You have won the game... for now.")
+
+        print("Game OVER! (TYPE RESET to reset game at beginning)")
+        self.gameOver = True
+    def printGameOver(self):
+        print("Game OVER! (TYPE RESET to reset game at beginning)")
+    def getGameOver(self):
+        return self.gameOver
+
+gameoverstatus = GameOverStatus()
+
 class monsterAttack(object):
 
     count = 0
 
-    def __init__(self, object_dictionary):
+    def __init__(self, object_dictionary, gameoverstatus):
         self.object_dictionary = object_dictionary
+        self.gameoverstatus = gameoverstatus
 
     def monsterAttackCount(self):
         self.count += 1
@@ -39,9 +56,10 @@ class monsterAttack(object):
 
         print("The sight of it sends terror down your spine and you pass out....")
         print("\nIt would seem your journey has ended it its beginning...")
-        GameOver(victory = False)
+        gameoverstatus.GameOver(victory = False)
 
-monster = monsterAttack(object_dictionary)
+monster = monsterAttack(object_dictionary, gameoverstatus)
+
 
 def help():
     print("Try typing simple commands mixed with objects/entities that you see.")
@@ -109,6 +127,28 @@ def beginGame():
     look()
 
 def playTurn(UI):
+    global gameoverstatus
+    global monster
+    global object_dictionary
+    if gameoverstatus.getGameOver():
+        if UI.lower() == 'reset':
+            p = player()
+            r = robot()
+            i = inventory()
+            w = window()
+            d = door()
+            l = lamp()
+            g = gun()
+            object_dictionary = {'p': p, 'r': r, 'i': i, 'w': w, 'd': d, 'l': l, 'g':g}
+
+            gameoverstatus = GameOverStatus()
+            monster = monsterAttack(object_dictionary, gameoverstatus)
+
+            return False
+        else:
+            gameoverstatus.printGameOver()
+            return True
+
     monster.monsterAttackCount()
     print()
     if 'with' in UI.lower():
@@ -146,7 +186,7 @@ def playTurn(UI):
         error()
 
     if object_dictionary['p'].isDead():
-        GameOver(victory = False)
+        gameoverstatus.GameOver(victory = False)
 
     if object_dictionary['w'].getHasBeenExitThrough():
         print("You land in a field by the house...")
@@ -155,7 +195,7 @@ def playTurn(UI):
             print("The robot lands behind you..")
 
             print("'Well... I guess we weren't going to be safe in there for much longer any way.")
-        GameOver(victory = True)
+        gameoverstatus.GameOver(victory = True)
 
     if object_dictionary['d'].getHasBeenExitThrough():
         print("You walk through the door and instantly fill dread pull into your stomach...")
@@ -165,16 +205,6 @@ def playTurn(UI):
         if object_dictionary['r'].getRobotFollows():
             print("'Well... I guess it was only a matter of time until it caught up with us.' Mr. Robot sighs.")
         print("I will spare you the details of the horrifying manner in which this beast eats.")
-        GameOver(victory = False)
+        gameoverstatus.GameOver(victory = False)
 
-
-
-def GameOver(victory):
-    if victory:
-        print("Congratulations! You have won the game... for now.")
-
-    print("Game OVER! Play Again? (TYPE Yes or No)")
-    retry = 'no' #TODO
-    if retry.lower() == 'yes':
-        print()
-        beginGame()
+    return True
