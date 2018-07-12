@@ -1,5 +1,14 @@
+#AUTHOR : James Gadoury
+#CONTACT: gadouryjames@gmail.com
+#GUI application developed using Tkinter and Python3
+#Dreams in Text : Text game with a fantastical setting
+#relies on playgame.py, game.py, interactables.py, and items.py
+
 from interactables import *
 interactionList = ['take', 'punch', 'kick', 'break', 'drop', 'climb', 'open', 'attack', 'shoot', 'pick up']
+i = 0
+for i in range(len(interactionList)):
+    interactionList.append(interactionList[i] + ' the')
 import time
 class inventory(object):
     def __init__(self):
@@ -57,7 +66,7 @@ class lamp(interactable):
     def engageLamp(self, UI, object_dictionary):
         self.interactWithObject(UI)
         if self.getUI() in self.lampInteractionList:
-            if self.getUI() =='take' or self.getUI() == 'take the' or self.getUI() == 'pick up':
+            if self.getUI() =='take' or self.getUI() == 'take the' or self.getUI() == 'pick up' or self.getUI() == 'pick up the':
                 if 'lamp' not in object_dictionary['i'].getInventory():
                     if self.getIsUsable() == True:
                         print("You pick up the lamp.")
@@ -126,7 +135,7 @@ class gun(interactable):
     def engagePistol(self, UI, object_dictionary):
         self.interactWithObject(UI)
         if self.getUI() in interactionList:
-            if self.getUI() =='take' or self.getUI() == 'take the' or self.getUI() == 'pick up':
+            if self.getUI() =='take' or self.getUI() == 'take the' or self.getUI() == 'pick up' or self.getUI() == 'pick up the':
                 if object_dictionary['r'].isAwake == True:
                     print("You reach to take the pistol from the robot's side...")
 
@@ -161,7 +170,7 @@ class gun(interactable):
         if self.getIsUsable() == True:
             print("You pick up the pistol.")
 
-            print("It has two bullets in the magazine and one in the chamber.")
+            print("It has two bullets in the clip and one in the chamber.")
             object_dictionary['i'].addItem('pistol')
         else:
             print("The pistol is out of bullets. It is useless now.")

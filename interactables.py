@@ -1,3 +1,9 @@
+#AUTHOR : James Gadoury
+#CONTACT: gadouryjames@gmail.com
+#GUI application developed using Tkinter and Python3
+#Dreams in Text : Text game with a fantastical setting
+#relies on playgame.py, game.py, interactables.py, and items.py
+
 from items import *
 import time
 interactionList = ['take', 'punch', 'kick', 'break', 'drop', 'climb', 'open', 'attack', 'shoot']
@@ -7,6 +13,9 @@ for i in range(len(communicationList)):
     communicationList.append(communicationList[i] + ' with')
     communicationList.append(communicationList[i] + ' to')
 
+# this class is the parent class to almost every class in the entire gameOver
+# interactWithObject takes the last word out of user input
+# getUI gets the user input that is passed to the interactable upon being called in playturn
 class interactable(object):
     def __init__(self):
         pass
@@ -17,6 +26,8 @@ class interactable(object):
     def getUI(self):
         return self.ui.lower()
 
+#parent class to any interactable character - inherited by robot and player
+#killed makes dead True, which refers to character being dead and isDead allows other objects and playTurn to get status of whether character is dead
 class character(interactable):
     def __init__(self):
         interactable.__init__(self)
