@@ -1,4 +1,11 @@
+#AUTHOR : James Gadoury
+#CONTACT: gadouryjames@gmail.com
+#GUI application developed using Tkinter and Python3
+#Dreams in Text : Text game with a fantastical setting
+#relies on playgame.py, game.py, interactables.py, and items.py
+
 from items import *
+import random
 import time
 interactionList = ['take', 'punch', 'kick', 'break', 'drop', 'climb', 'open', 'attack', 'shoot']
 communicationList = ['speak', 'communicate', 'talk']
@@ -7,6 +14,9 @@ for i in range(len(communicationList)):
     communicationList.append(communicationList[i] + ' with')
     communicationList.append(communicationList[i] + ' to')
 
+# this class is the parent class to almost every class in the entire gameOver
+# interactWithObject takes the last word out of user input
+# getUI gets the user input that is passed to the interactable upon being called in playturn
 class interactable(object):
     def __init__(self):
         pass
@@ -17,6 +27,8 @@ class interactable(object):
     def getUI(self):
         return self.ui.lower()
 
+#parent class to any interactable character - inherited by robot and player
+#killed makes dead True, which refers to character being dead and isDead allows other objects and playTurn to get status of whether character is dead
 class character(interactable):
     def __init__(self):
         interactable.__init__(self)
@@ -60,6 +72,11 @@ class robot(character):
                 print("Maybe one broken hand is enough....")
             elif self.getUI() in attackList or self.getUI() == 'attack robot with lamp' or self.getUI() == 'attack robot with pistol':
                 self.RobotBattle(object_dictionary)
+            elif self.getUI() == 'wake up' or self.getUI() == 'wake up the' or self.getUI() == 'turn on' or self.getUI() == 'turn on the' or self.getUI() == 'wake' or self.getUI() == 'wake the':
+                print("You tap on the robot to see if it responds...")
+                self.awaken()
+                print("The robot opens it eyes and looks at you...")
+                print("'Oh... you are awake...', it says.")
             else:
                 error()
 
@@ -122,26 +139,46 @@ class robot(character):
 
     def robotQuestion(self, question):
         if "where" in question.lower():
-            print("'Well... you are...here. To be honest, I don't really know quite myself.'")
+            print("\n'Well... you are...here. To be honest, I don't really know quite myself.'")
 
         elif "what am i" in question.lower() or "who am i" in question.lower():
-            print("'There was an....accident. I am not sure how much you...actually want to know. For right now, let's focus on surving.'")
+            print("\n'You really don't remember...' it says.")
+            print("'Now is not the time... You are very important... You must survive... Focus on that for now.'")
         elif "who are you" in question.lower() or "what are you" in question.lower():
-            print("'Well...you can call me... Mr. Robot.', it chuckles.")
-
+            print("\n'Well...you can call me... Mr. Robot.', it chuckles.")
+            print("'I guess you don't remember anything.'")
             print("'Yes... Call me Mr.Robot.'")
         elif "here" in question.lower():
-            print("'This was the only safe place I could find for us...' it says.")
+            print("\n'This was the only safe place I could find for us...' it says.")
 
             print("'I fought hard to get us here... though I think it may be time to give up.' it follows.")
+
+        elif "gun" in question.lower() or "pistol" in question.lower():
+            print("\n'Well I took the gun from you...'")
+            print("'I needed it to subdue the monster earlier...' the robot says.")
+
+        elif "off" in question.lower():
+            print("\n'Of course we are off!', the robot exclaims!")
+            print("'Anyone would be off after surviving an ordeal with that beast!'")
         elif "how long" in question.lower():
-            print("'Not long... I think' the robot replies.")
+            print("\n'Not long... I think' the robot replies.")
 
             print("'Though... I am not quite sure how long I have been...asleep' the robot reluctantly follows.")
+
+        elif "monster" in question.lower() or "beast" in question.lower() or "monstrosity" in question.lower():
+            print("\n'We ran into that beast some time ago... I don't know what happened to you.' the robot says.")
+            print("'Your face went pale and you passed out, I was able to wound it with the pistol and carried you out of there.'")
+            print("'Do you not remember anything? You don't remember who I am?', it says in a frantic tone.")
+
+        elif "door" in question.lower():
+            print("\n'I had to barricade the door to keep us safe... I don't know if that...beast will be able to trace our smell...' the robot says.")
+            print("'Though I don't know if some wood will keep that monstrosity out.'")
+
         elif "can we leave" in question.lower() or "open" in question.lower() or "outside" in question.lower():
-            print("'No... I am so sorry. We can't go outside. Honestly... I think we are done for. Out there are countless dangers...' the robot apologetically explains.")
+            print("\n'No... I am so sorry. We can't go outside. Honestly... I think we are done for. Out there are countless dangers...' the robot apologetically explains.")
 
             print("'... and in here... we aren't going to last much longer.'")
+
         elif "help" in question.lower():
             print("'I am trying to help you! Though.... I am out of ideas...' the robot sighs.")
 
@@ -152,7 +189,14 @@ class robot(character):
             print("You can now command the robot: COMMAND ROBOT <COMMAND> ... EXAMPLE: COMMAND ROBOT KICK DOOR")
             self.canBeCommanded = True
         else:
-            print("'Sorry... I don't understand your question, but we may both be a little...off.', it says apologetically.")
+            rand = random.randint(1, 10)
+            if rand < 3:
+                print("\n'Sorry... I don't understand your question, but we may both be a little...off.', it says apologetically.")
+            elif rand >= 3 and rand <=7:
+                print("\n'What are you saying?!', the robot exclaims!")
+            else:
+                print("\n'I am not sure what you mean... you aren't making any sense', the robot confesses.")
+
 
     def robotCommand(self, command, object_dictionary):
         if self.getCanBeCommanded() and not self.isDead():
@@ -209,14 +253,21 @@ class robot(character):
     def getCanBeCommanded(self):
         return self.canBeCommanded
 
-    def killsPlayer(self, object_dictionary):
-        print("The robot jumps up while screaming 'INTRUDER!', and blasts at the door with the pistol!")
+    def reactsToLoudNoise(self, object_dictionary):
+        self.awaken()
+        if 'pistol' not in object_dictionary['i'].getInventory():
+            print("\nThe robot jumps up while screaming 'INTRUDER!', and blasts at the door with the pistol!")
 
-        print("You were in the way! Everything fades to black...")
+            print("You were in the way! Everything fades to black...")
 
-        print("'No....no. I thought you were an intruder... I didn't...', the robot sounds so human...")
+            print("'No....no. I thought you were an intruder... I didn't...', the robot sounds so human...")
 
-        object_dictionary['p'].killed()
+            object_dictionary['p'].killed()
+
+        else:
+
+            print("\nThe robot jumps up while screaming 'INTRUDER!'")
+            print("'Oh...I thought you were an intruder.... when did you take my pistol?' the robot says cautiously..")
 
     def robotFollows(self):
         self.robotFollowsPlayer = True
@@ -269,7 +320,7 @@ class window(interactable):
             print("You walk over and open the window.")
 
 
-        elif self.getUI() == 'exit' or self.getUI() == 'exit the':
+        elif self.getUI() == 'exit' or self.getUI() == 'exit the' or self.getUI() == 'climb out' or self.getUI() == 'climb out the':
             if object_dictionary['r'].getCanBeCommanded() or object_dictionary['r'].isDead():
                 print("You climb up and out the window.")
                 self.exitThrough()
@@ -277,6 +328,12 @@ class window(interactable):
                 if not object_dictionary['r'].isDead():
                     print("The robot follows without saying a word...")
                     object_dictionary['r'].robotFollows()
+
+            elif not object_dictionary['r'].isAwake():
+                print("You walk over to the window")
+                object_dictionary['r'].awaken()
+                print("The robot's eyes open and it jumps up to its feet!")
+                print("'OH! You are awake! Wait... where are you going...', it says.")
             else:
                 print("'No... don't go out there.' says the robot.")
         elif self.getUI() == 'break window with lamp' and self.isBroken() == False:
@@ -289,7 +346,7 @@ class window(interactable):
 
 
             if not object_dictionary['r'].isAwake() and not object_dictionary['r'].isDead():
-                object_dictionary['r'].killsPlayer(object_dictionary)
+                object_dictionary['r'].reactsToLoudNoise(object_dictionary)
 
             elif object_dictionary['r'].isAwake() and not object_dictionary['r'].isDead():
                 print("'Why would you do that?', the robot asks.")
@@ -375,7 +432,7 @@ class door(interactable):
                 print("'There is nothing for you out there.', it says in a tired tone.")
 
             elif not object_dictionary['r'].isAwake() and not object_dictionary['r'].isDead():
-                object_dictionary['r'].killsPlayer(object_dictionary)
+                object_dictionary['r'].reactsToLoudNoise(object_dictionary)
 
         elif self.getUI() == 'break door with lamp':
             object_dictionary['l'].breaks(object_dictionary)
@@ -390,7 +447,7 @@ class door(interactable):
                     print("'You poor soul'... the electronic voice drips with regret.")
                 else:
                     object_dictionary['r'].awaken()
-                    object_dictionary['r'].killsPlayer(object_dictionary)
+                    object_dictionary['r'].reactsToLoudNoise(object_dictionary)
 
 
         elif self.getUI() == 'shoot door with pistol':
