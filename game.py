@@ -49,9 +49,26 @@ class monsterAttack(object):
 
     def monsterAttackCount(self):
         self.count += 1
+        if self.count == 7:
+            print("\nYou hear a roar in the distance...")
+            print("It probably would be a good idea to get out of here soon...")
+
+        if self.count == 12:
+            print("\nYou hear a roar again... but much, much louder...")
+            print("It sounds closer...")
+
         if self.count == 15:
+            print("\n*ROOOAARR*")
+            print("It sounds close...")
+
+        if self.count == 19:
+            print("\n*ROOOOOOOOOAAAAAAAAARRR*")
+            print("You can tell that whatever is roaring is right outside the door.")
+
+        if self.count == 20:
             self.monsterAttacks()
             self.monsterAttacked = True
+
 
     def monsterAttacks(self):
         print("\nYou suddenly hear a terrifying roar that echoes through the entire room!")
@@ -172,9 +189,6 @@ def playTurn(UI):
             gameoverstatus.printGameOver()
             return True
 
-    monster.monsterAttackCount()
-    if monster.getMonsterAttacked():
-        return True
     print()
     if 'with' in UI.lower():
         if 'lamp' in UI.lower():
@@ -190,8 +204,11 @@ def playTurn(UI):
             object_dictionary['r'].robotCommand(UI, object_dictionary)
         else:
             object_dictionary['r'].engageRobot(UI, object_dictionary)
-    elif "?" in UI and object_dictionary['r'].isAwake() and not object_dictionary['r'].isDead():
-        object_dictionary['r'].robotQuestion(UI)
+    elif "?" in UI:
+        if object_dictionary['r'].isAwake() and not object_dictionary['r'].isDead():
+            object_dictionary['r'].robotQuestion(UI)
+        else:
+            print("Who are you talking to?")
     elif "window" in UI.lower():
             object_dictionary['w'].engageWindow(UI, object_dictionary)
     elif "door" in UI.lower():
@@ -209,6 +226,7 @@ def playTurn(UI):
         look()
     else:
         error()
+
 
     # if player is dead - then game over is triggered
     if object_dictionary['p'].isDead():
@@ -230,11 +248,16 @@ def playTurn(UI):
     if object_dictionary['d'].getHasBeenExitThrough():
         print("You walk through the door and instantly fill dread pull into your stomach...")
 
-        print("As you look up, you see directly into the eyes of a giant monster. Rows of teeth fill a giant snarl breathing the smell of blood and dispair directly into your nose.")
+        print("As you look up, you see directly into the eyes of a giant monster.")
+        print("Rows of teeth fill a giant snarl breathing the smell of blood and dispair directly into your nose.")
 
         if object_dictionary['r'].getRobotFollows():
             print("'Well... I guess it was only a matter of time until it caught up with us.' Mr. Robot sighs.")
         print("I will spare you the details of the horrifying manner in which this beast eats.")
         gameoverstatus.GameOver(victory = False)
+
+    monster.monsterAttackCount()
+    if monster.getMonsterAttacked():
+        return True
 
     return True
